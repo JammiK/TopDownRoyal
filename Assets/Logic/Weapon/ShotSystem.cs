@@ -1,36 +1,66 @@
-﻿using Assets.Interfaces.Weapon;
+﻿using System;
+using Assets.Interfaces.Players;
+using Assets.Interfaces.Weapon;
+using Assets.Logic.Weapon.Damages;
+using JetBrains.Annotations;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using Zenject;
+using Random = UnityEngine.Random;
 
 namespace Assets.Logic.Weapon
 {
-    class ShotSystem : MonoBehaviour, IShot
+    public class ShotSystem : MonoBehaviour, IShot
     {
         [SerializeField]
         float _speed;
 
-        [SerializeField]
-        float _spread;
+        Rigidbody _rigidbody;
+        ShotParticle.Factory _shotParticleFactory;
+        SimpleDamage.Factory _simpleDamageFactory;
 
         public Vector3 Direction { get; set; }
 
         public float Spread { get; set; }
 
-        [Inject(Id = "Self")]
-        Rigidbody _rigidbody;
-
+        //Construction from factory
         [Inject]
-        ShotParticle.Factory _shotParticleFactory;
+        public void Construct(IShotPoint shotPoint,
+            float spread,
+            IDamage damage,
+            [NotNull] [Inject(Id = "Self")] Rigidbody selfRigidbody,
+            [NotNull] ShotParticle.Factory shotParticleFactory,
+            [NotNull] SimpleDamage.Factory simpleDamageFactory)
+        {
+            //Initialize
+            _rigidbody = GetComponent<Rigidbody>();
+            _shotParticleFactory = shotParticleFactory;
+            _simpleDamageFactory = simpleDamageFactory;
+            Spread = spread;
+            transform.position = shotPoint.Position;
+            
+            //Logic
+            Direction = Quaternion.AngleAxis(Random.Range(-spread / 2, spread / 2 ), Vector3.up) * shotPoint.Forward;
+            
+            SubscribeToStreams(damage);
+        }
 
         void Start()
         {
-            Direction = Quaternion.AngleAxis(Random.Range(-_spread, _spread), Vector3.up) * Direction;
             _rigidbody.AddForce(Direction.normalized * _speed * 10);
-            this.OnCollisionEnterAsObservable()
-                .Where(collision => collision.gameObject.GetComponent<ShotSystem>() == null)
-                .Subscribe(Destroy);
+        }
+
+        void SubscribeToStreams(IDamage damage)
+        {
+            var stream = this.OnCollisionEnterAsObservable()
+                .Where(collision => collision.gameObject.GetComponent<IShot>() == null);
+
+            stream.Subscribe(Destroy);
+
+            stream.Select(collision => collision.gameObject.GetComponent<IDamageTaker>())
+                .Where(damageTaker => damageTaker != null)
+                .Subscribe(damageTaker => damageTaker.TakeDamage(damage));
         }
 
         void Destroy(Collision collision)
@@ -40,6 +70,11 @@ namespace Assets.Logic.Weapon
             particle.transform.rotation = Quaternion.LookRotation(collision.contacts[0].normal);
             Destroy(particle.gameObject, 0.5f);
             Destroy(gameObject);
+        }
+
+        public class Factory : PlaceholderFactory<IShotPoint, float, IDamage, ShotSystem>
+        {
+
         }
 
     }

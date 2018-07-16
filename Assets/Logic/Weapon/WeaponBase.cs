@@ -13,10 +13,10 @@ namespace Assets.Logic.Weapon
     public abstract class WeaponBase : MonoBehaviour, IWeapon
     {
         [SerializeField]
-        protected float _spread;
+        float _spread;
 
-        [SerializeField]
-        protected GameObject _shotPrefab;
+        [Inject]
+        ShotSystem.Factory _shotFactory;
 
         public ReactiveProperty<bool> IsReady { get; }
 
@@ -34,13 +34,12 @@ namespace Assets.Logic.Weapon
             throw new NotImplementedException();
         }
 
-        protected void Shot(IShotPoint shotPoint)
+        protected void Shot(IShotPoint shotPoint, IDamage damage)
         {
-            var shot = Instantiate(_shotPrefab, shotPoint.Position, Quaternion.identity).GetComponent<IShot>();
-            shot.Direction = shotPoint.Forward;
-            shot.Spread = _spread;
+            _shotFactory.Create(shotPoint, _spread, damage);
         }
 
         public abstract void SetFireStream(IObservable<IShotPoint> stream);
+
     }
 }

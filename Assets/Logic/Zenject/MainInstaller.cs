@@ -10,6 +10,7 @@ using UnityEngine.UI;
 using Assets.Logic.SiSystem;
 using Assets.Interfaces.Weapon;
 using Assets.Logic.Weapon;
+using Assets.Logic.Weapon.Damages;
 
 public class MainInstaller : MonoInstaller<MainInstaller>
 {
@@ -65,6 +66,8 @@ public class MainInstaller : MonoInstaller<MainInstaller>
         Container.BindFactory<Pistol, Pistol.Factory>().FromComponentInNewPrefabResource("Prefabs/Weapons/Pistol");
         Container.BindFactory<Gun, Gun.Factory>().FromComponentInNewPrefabResource("Prefabs/Weapons/Gun");
         Container.BindFactory<ShotParticle, ShotParticle.Factory>().FromComponentInNewPrefabResource("Prefabs/Particles/ShotCollision");
+        Container.BindFactory<int, SimpleDamage, SimpleDamage.Factory>();
+        Container.BindFactory<IShotPoint, float, IDamage, ShotSystem, ShotSystem.Factory>().FromComponentInNewPrefabResource("Prefabs/Shots/PistolShot");
     }
 
 }

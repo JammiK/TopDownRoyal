@@ -41,7 +41,7 @@ namespace Assets.Logic.Players
                 .Where(_ => Vector2.Distance(Input.mousePosition, _centerPosition) > _range)
                 .Select(_ => (Vector2)Input.mousePosition);
 
-            return streamDown.ZipLatest(streamUp, Tuple.Create)
+            return streamDown.Zip(streamUp, Tuple.Create)
                 .Where(tuplePosition => Vector2.Distance(tuplePosition.Item1, tuplePosition.Item2) > 50)
                 .Select(tuplePosition => (Vector2)(tuplePosition.Item2 - tuplePosition.Item1));
         }
