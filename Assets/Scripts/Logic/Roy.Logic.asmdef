@@ -1,0 +1,11 @@
+{
+    "name": "Roy.Logic",
+    "references": [
+        "Roy.Logic.Interfaces",
+        "Roy.Plugins"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}
