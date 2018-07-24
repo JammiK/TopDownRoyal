@@ -38,15 +38,9 @@ namespace Assets.Scripts.Logic.Zenject
             InstallFactories();
         }
 
-        T FindComponentOnSceneByName<T>(string name) where T : Component
+        T FindComponentOnSceneByName<T>(string objectName) where T : Component
         {
-            var result = FindObjectsOfType<T>()?.First(go => go.name == name);
-            if (result == null)
-            {
-                throw new ArgumentException(nameof(T));
-            }
-
-            return result;
+            return FindObjectsOfType<T>()?.First(go => go.name == objectName) ?? throw new ArgumentException(nameof(T));
         }
 
         void InstallSelf<T>()
