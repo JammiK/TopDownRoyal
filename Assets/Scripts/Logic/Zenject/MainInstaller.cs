@@ -18,24 +18,33 @@ namespace Assets.Scripts.Logic.Zenject
     {
         const string SelfId = "Self";
         const string ChildId = "Child";
+        const string ParentId = "Parent";
 
         public override void InstallBindings()
         {
             Container.BindInterfacesTo<InputSystem>().AsSingle();
-            Container.Bind<Rigidbody>().FromComponentSibling();
             Container.Bind<IHaveHealth>().WithId("MainPlayer")
-                .FromInstance(FindComponentOnSceneByName<PlayerStats>("Player"));
+                .FromInstance(FindComponentOnSceneByName<CharacterStats>("Player"));
+
+            //Self Installs
             InstallSelf<Text>();
             InstallSelf<Transform>();
             InstallSelf<Collider>();
             InstallSelf<Rigidbody>();
             InstallSelf<IWeaponDealSelector>();
+            InstallSelf<IHaveHealth>();
 
+            //SIngle Instanse Installs
             InstallSI<HealSystem>();
 
+            //Child Installs
             InstallChild<IWeaponData>();
 
+            //Factory Installs
             InstallFactories();
+
+            //Parent Installs
+            InstallParent<IHaveHealth>();
         }
 
         T FindComponentOnSceneByName<T>(string objectName) where T : Component
@@ -51,6 +60,11 @@ namespace Assets.Scripts.Logic.Zenject
         void InstallChild<T>()
         {
             Container.Bind<T>().WithId(ChildId).FromComponentInChildren();
+        }
+
+        void InstallParent<T>()
+        {
+            Container.Bind<T>().WithId(ParentId).FromComponentInParents();
         }
 
         void InstallSI<T>() where T : IInitializable

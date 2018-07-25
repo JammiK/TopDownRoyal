@@ -6,13 +6,15 @@ using Zenject;
 
 namespace Assets.Scripts.Logic.Players
 {
+    [RequireComponent(typeof(IHaveHealth))]
     class DamageTaker : MonoBehaviour, IDamageTaker
     {
-        [Inject] readonly IHaveHealth _healthStats;
+        [Inject(Id = "Self")] readonly IHaveHealth _selfHealthStats;
 
         public void TakeDamage(IDamage damage)
         {
-            _healthStats.Health.Value -= damage.Value;
+            _selfHealthStats.Health.Value -= damage.Value;
+            Debug.Log($"Get Damage {damage.Value}");
         }
     }
 }

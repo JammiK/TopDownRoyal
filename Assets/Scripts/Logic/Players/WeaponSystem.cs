@@ -26,8 +26,6 @@ namespace Assets.Scripts.Logic.Players
             var fireStream = _mouseScreenClickObservable.OnMouseTwitchUp()
                 .Select(_ => _weaponData.ShotPoint);
 
-            //_mouseScreenClickObservable.OnMouseTwitchUp().Subscribe(tuple => Debug.Log(tuple));
-
             weapon.SetFireStream(fireStream);
             
         }

@@ -10,7 +10,7 @@ namespace Assets.Scripts.Logic.Players
         [Inject]
         readonly IMouseScreenClickObservable _inputSystem;
 
-        [Inject]
+        [Inject(Id = "Self")]
         Rigidbody _rigidBody;
 
         float _moveSpeed = 0.1f;

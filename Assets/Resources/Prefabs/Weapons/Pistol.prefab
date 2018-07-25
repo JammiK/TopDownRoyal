@@ -150,5 +150,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spread: 5
-  _shotPrefab: {fileID: 1818658112614914, guid: e7124c4f4d5e27e43936509d59a8ca8c,
-    type: 2}
+  _damageValue: 9
